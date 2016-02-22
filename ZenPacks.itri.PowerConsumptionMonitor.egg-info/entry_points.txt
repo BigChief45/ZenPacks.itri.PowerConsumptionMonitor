@@ -1,0 +1,3 @@
+[zenoss.zenpacks]
+ZenPacks.itri.PowerConsumptionMonitor = ZenPacks.itri.PowerConsumptionMonitor
+
