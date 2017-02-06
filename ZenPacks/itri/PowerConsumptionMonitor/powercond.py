@@ -1,6 +1,7 @@
-# This is an example of a custom collector daemon.
+###################################
+# Author: Jaime Andres Alvarez
+###################################
 
-# Log file will be located in $ZENHOME/log/powercond.log
 import logging
 log = logging.getLogger('zen.powercond')
 logging.basicConfig()
@@ -20,12 +21,8 @@ from Products.ZenCollector.tasks \
 
 from Products.ZenUtils.observable import ObservableMixin
 
-# unused is way to keep Python linters from complaining about imports that we
-# don't explicitely use. Occasionally there is a valid reason to do this.
 from Products.ZenUtils.Utils import unused
 
-# We must import our ConfigService here so zenhub will allow it to be
-# serialized and deserialized. We'll declare it unused to satisfy linters.
 from ZenPacks.itri.PowerConsumptionMonitor.services.PowerMonConfigService \
     import PowerMonConfigService
 
@@ -34,10 +31,6 @@ unused(PowerMonConfigService)
 
 from Products.ZenEvents.ZenEventClasses import Error, Clear, Critical
 
-
-# Your implementation of ICollectorPreferences is where you can handle custom
-# command line (or config file) options and do global configuration of the
-# daemon.
 class ZenPowerConsumptionMonitorPreferences(object):
     zope.interface.implements(ICollectorPreferences)
 
@@ -61,23 +54,12 @@ class ZenPowerConsumptionMonitorPreferences(object):
         # and when to write to the RRD file.        
         self.task_ids = []
                 
-
     def buildOptions(self, parser):
-        """
-        Required to implement the ICollectorPreferences interface.
-        """
         pass
 
     def postStartup(self):
-        # Called by the framework after initial startup has completed but before
-        # any active processing begins. Allows the configuration to perform any
-        # additional initialization that may be necessary after the collector has
-        # started.
         pass
 
-# The implementation of IScheduledTask for your daemon is usually where most
-# of the work is done. This is where you implement the specific logic required
-# to collect data.
 class ZenPowerConsumptionMonitorTask(ObservableMixin):
     zope.interface.implements(IScheduledTask)
 
@@ -99,16 +81,13 @@ class ZenPowerConsumptionMonitorTask(ObservableMixin):
 
         self._devId = deviceId
         self._manageIp = self._taskConfig.manageIp
-        self._datapoints = self._taskConfig.datapoints		# Data points List obtained from config program
+
+        # Data points List obtained from config program
+        self._datapoints = self._taskConfig.datapoints		
         
-        
-    # doTask is where the collector logic should go. It is also required to
-    # implement the IScheduledTask interface. It will be called directly by the
-    # framework when it's this task's turn to run.
     def doTask(self):
-        
         if (self.name in self._preferences.task_ids):
-           # Task is repeated, this means that all tasks have ran in the previous cycle.
+           # Task is repeated, this means that all tasks have already ran in the previous cycle.
            # Write Total Power for previous cycle to RRD file
            createCmd = self._datapoints[0].get('rrdCmd')
            self._writeRRD(createCmd)
@@ -119,9 +98,9 @@ class ZenPowerConsumptionMonitorTask(ObservableMixin):
         
         # Push this task to the task list
         self._preferences.task_ids.append(self.name)
-            
-        device_power = self._datapoints[0].get('dpValue')	# Value comes from a dictionary inside a list, 1st element.
 
+        # Value comes from a dictionary inside a list, 1st element.            
+        device_power = self._datapoints[0].get('dpValue') 
         log.info("Obtaining Power Consumption from device  %s [%s] | Value: %s Watts", self._devId, self._manageIp, device_power)
 
         # Increase total power
@@ -142,16 +121,13 @@ class ZenPowerConsumptionMonitorTask(ObservableMixin):
           
           # 1st param: RRD Create Command
           # 2nd param: Step
-          rrd = RRDUtil(rrdCmd, 300)
-          
+          rrd = RRDUtil(rrdCmd, 300)          
           value2 = rrd.save("totalPower", self._preferences.totalPower, "GAUGE", min=0, max=None)		# This command will write to zenoss/perf/
 
           log.info("Finished Writing. Return Value: %s" % (value2))
-
        except Exception, ex:
           summary = "Unable to save data value into RRD file %s . (Exception: \'%s\')" % \
              ("totalPower.rrd", ex)
-
           log.error(summary)
           
           # Send Error Event to Zenoss
@@ -165,11 +141,8 @@ class ZenPowerConsumptionMonitorTask(ObservableMixin):
              agent = self._preferences.collectorName
              ))
 
-    # cleanup is required to implement the IScheduledTask interface.
     def cleanup(self):
         pass
-
-
 
 # Utils class for useful static methods
 class Utils:
