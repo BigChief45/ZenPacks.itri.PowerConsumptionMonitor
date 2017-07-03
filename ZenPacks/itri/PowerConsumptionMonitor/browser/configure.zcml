@@ -7,18 +7,6 @@
         directory="resources"
         />
 
-    <!-- Register custom JavaScript for ExampleDevices.
-    <viewlet
-        name="js-exampledevice"
-        paths="/++resource++example/js/ExampleDevice.js"
-        weight="10"
-        for="..ExampleDevice.ExampleDevice"
-        manager="Products.ZenUI3.browser.interfaces.IJavaScriptSrcManager"
-        class="Products.ZenUI3.browser.javascript.JavaScriptSrcBundleViewlet"
-        permission="zope2.Public"
-        />
-    -->
-    
     <!-- Register the Power Consumption Portlet -->
     <viewlet
         name="js-dashboard-powercon-portlet"
