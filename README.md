@@ -1,6 +1,7 @@
-## Dependencies
-- [ZenPacks.zenoss.Dashboard](http://wiki.zenoss.org/ZenPack:Dashboard)
+# ZenPacks.itri.PowerConsumptionMonitor
 
-## Change History
-- **1.0.0**
-	- Initial Release
+Monitors total power consumption from all devices in a Zenoss Core 4 deployment.
+
+## Dependencies
+- ZenPacks.itri.ServerMonitor
+- [ZenPacks.zenoss.Dashboard](http://wiki.zenoss.org/ZenPack:Dashboard)
